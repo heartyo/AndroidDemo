@@ -98,11 +98,26 @@ class Demo1 : AppCompatActivity() {
 
         /**
          * 注意：
-         * 1、一般来说本例的执行顺序是 a b x，但是因为协程足够快，所以执行顺序也可能是 b a x 之类的
+         * 1、一般来说本例的执行顺序是 a b x，但是因为协程足够快，所以执行顺序也可能是 a x b之类的
          * 2、本例中 x 和 y 不一定运行在同一个线程，b 和 c 不一定运行在同一个线程
-         *    因为一个协程并不绑定在任何特定的线程上，它可以在一个线程中暂停执行，在另一个线程中继续执行
+         *  因为一个协程并不绑定在任何特定的线程上，它可以在一个线程中暂停执行，在另一个线程中继续执行
+         *  同一个协程作用域是按顺序执行
          */
         appendMessage("a")           // a（main）
+        /**
+
+        2022-09-24 22:51:51.455 2243-2243/com.webabcd.androiddemo D/coroutine: 22:51:51.452: a（main）
+        2022-09-24 22:51:51.455 2243-2243/com.webabcd.androiddemo D/coroutine: 22:51:51.453: x（DefaultDispatcher-worker-1）
+        2022-09-24 22:51:51.455 2243-2243/com.webabcd.androiddemo D/coroutine: 22:51:51.452: b（DefaultDispatcher-worker-2）
+        2022-09-24 22:51:52.462 2243-2243/com.webabcd.androiddemo D/coroutine: 22:51:52.457: y（DefaultDispatcher-worker-2）
+        2022-09-24 22:51:52.464 2243-2243/com.webabcd.androiddemo D/coroutine: 22:51:52.457: c（DefaultDispatcher-worker-1）
+
+        2022-09-24 22:53:33.370 2243-2243/com.webabcd.androiddemo D/coroutine: 22:53:33.367: a（main）
+        2022-09-24 22:53:33.371 2243-2243/com.webabcd.androiddemo D/coroutine: 22:53:33.367: b（DefaultDispatcher-worker-1）
+        2022-09-24 22:53:33.373 2243-2243/com.webabcd.androiddemo D/coroutine: 22:53:33.368: x（DefaultDispatcher-worker-1）
+        2022-09-24 22:53:34.375 2243-2243/com.webabcd.androiddemo D/coroutine: 22:53:34.370: y（DefaultDispatcher-worker-1）
+        2022-09-24 22:53:34.377 2243-2243/com.webabcd.androiddemo D/coroutine: 22:53:34.370: c（DefaultDispatcher-worker-2）
+         */
     }
 
     fun sample2() {
@@ -113,12 +128,20 @@ class Demo1 : AppCompatActivity() {
         runBlocking {
             this.launch(Dispatchers.Default) {
                 appendMessage("b")   // b（DefaultDispatcher-worker-2）
-                delay(1000) // delay 是一个 suspend 函数
+                delay(6000) // delay 是一个 suspend 函数
                 appendMessage("c")   // c（DefaultDispatcher-worker-2）
             }
             appendMessage("a")       // a（main）
         }
         appendMessage("d")           // d（main）
+        /**
+          D/coroutine: 23:03:15.548: a（main）
+          D/coroutine: 23:03:15.548: b（DefaultDispatcher-worker-1）
+         D/coroutine: 23:03:16.551: c（DefaultDispatcher-worker-1）
+         D/coroutine: 23:03:16.553: d（main）
+
+          a b没有明确顺序关系，a b 不再同一个线程
+         */
     }
 
     fun sample3() {
@@ -138,6 +161,11 @@ class Demo1 : AppCompatActivity() {
             appendMessage("c")  // c（DefaultDispatcher-worker-1）
         }
         appendMessage("a")      // a（main）
+        /**
+         * 2022-09-24 23:17:11.474 5356-5356/com.webabcd.androiddemo D/cccc: a
+        2022-09-24 23:17:11.978 5356-5356/com.webabcd.androiddemo D/cccc: b
+        2022-09-24 23:17:12.477 5356-5393/com.webabcd.androiddemo D/cccc: c
+         */
     }
 
     fun sample4() {
@@ -174,6 +202,13 @@ class Demo1 : AppCompatActivity() {
 
         // 本例中 task1, task2, task3 是并行执行的，主线程会阻塞直到 task2 和 task3 执行完
         appendMessage("d")                  // d（main）
+        /**
+         * 2022-09-24 23:19:40.515 5356-5356/com.webabcd.androiddemo D/cccc: a
+        2022-09-24 23:19:41.016 5356-5394/com.webabcd.androiddemo D/cccc: b
+        2022-09-24 23:19:41.018 5356-5356/com.webabcd.androiddemo D/cccc: c
+        2022-09-24 23:19:41.019 5356-5356/com.webabcd.androiddemo D/cccc: d
+        2022-09-24 23:19:42.015 5356-5394/com.webabcd.androiddemo D/cccc: e
+         */
     }
 
     fun sample5() {
@@ -272,12 +307,14 @@ class Demo1 : AppCompatActivity() {
         val time = dateFormat.format(Date());
         val threadName = Thread.currentThread().name
 
+        Log.d("cccc", message)
+
         CoroutineScope(Dispatchers.Main).launch{
             val log = "$time: $message（$threadName）"
             textView1.append(log);
             textView1.append("\n");
-
             Log.d("coroutine", log)
+
         }
     }
 }
