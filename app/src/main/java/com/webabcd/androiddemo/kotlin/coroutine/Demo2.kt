@@ -72,6 +72,11 @@ class Demo2 : AppCompatActivity() {
         // a（DefaultDispatcher-worker-2）
         // b（DefaultDispatcher-worker-2）
         // c（DefaultDispatcher-worker-2）
+        /**
+         * 2022-09-25 20:47:26.045 7363-7409/com.webabcd.androiddemo D/cccc: a DefaultDispatcher-worker-1
+        2022-09-25 20:47:27.049 7363-7409/com.webabcd.androiddemo D/cccc: b DefaultDispatcher-worker-1
+        2022-09-25 20:47:27.050 7363-7409/com.webabcd.androiddemo D/cccc: c DefaultDispatcher-worker-1
+         */
     }
 
     fun sample2() {
@@ -97,6 +102,7 @@ class Demo2 : AppCompatActivity() {
             // job.cancelAndJoin()
             appendMessage("done")
         }
+        //在IO或者Default线程不一定是一个线程，多个协程可能运行在多个线程中，除非是主线程，只会在主线程运行
         // heartbeat 0 ...（DefaultDispatcher-worker-1）
         // heartbeat 1 ...（DefaultDispatcher-worker-1）
         // heartbeat 2 ...（DefaultDispatcher-worker-1）
@@ -127,10 +133,19 @@ class Demo2 : AppCompatActivity() {
             job.cancelAndJoin()
             appendMessage("done")
         }
-        // heartbeat 0 ...（DefaultDispatcher-worker-1）
-        // heartbeat 1 ...（DefaultDispatcher-worker-1）
-        // heartbeat 2 ...（DefaultDispatcher-worker-1）
-        // done（DefaultDispatcher-worker-1）
+        /**
+        2022-09-25 21:02:26.386 7935-7980/com.webabcd.androiddemo D/cccc: heartbeat 0 ... DefaultDispatcher-worker-1
+        2022-09-25 21:02:26.891 7935-7980/com.webabcd.androiddemo D/cccc: heartbeat 1 ... DefaultDispatcher-worker-1
+        2022-09-25 21:02:27.395 7935-7980/com.webabcd.androiddemo D/cccc: heartbeat 2 ... DefaultDispatcher-worker-1
+        2022-09-25 21:02:27.691 7935-7981/com.webabcd.androiddemo D/cccc: done DefaultDispatcher-worker-2
+
+        2022-09-25 21:02:44.885 7935-7980/com.webabcd.androiddemo D/cccc: heartbeat 0 ... DefaultDispatcher-worker-1
+        2022-09-25 21:02:45.389 7935-7980/com.webabcd.androiddemo D/cccc: heartbeat 1 ... DefaultDispatcher-worker-1
+        2022-09-25 21:02:45.893 7935-7980/com.webabcd.androiddemo D/cccc: heartbeat 2 ... DefaultDispatcher-worker-1
+        2022-09-25 21:02:46.186 7935-7980/com.webabcd.androiddemo D/cccc: done DefaultDispatcher-worker-1
+
+        a
+         */
     }
 
     fun sample4() {
@@ -258,6 +273,7 @@ class Demo2 : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH)
         val time = dateFormat.format(Date());
         val threadName = Thread.currentThread().name
+        Log.d("cccc", message+" "+Thread.currentThread().name)
 
         CoroutineScope(Dispatchers.Main).launch{
             val log = "$time: $message（$threadName）"

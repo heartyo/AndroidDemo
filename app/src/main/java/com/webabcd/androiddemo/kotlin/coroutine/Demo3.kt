@@ -186,7 +186,7 @@ class Demo3 : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH)
         val time = dateFormat.format(Date());
         val threadName = Thread.currentThread().name
-
+        Log.d("cccc", message+" "+Thread.currentThread().name)
         CoroutineScope(Dispatchers.Main).launch{
             val log = "$time: $message（$threadName）"
             textView1.append(log);
