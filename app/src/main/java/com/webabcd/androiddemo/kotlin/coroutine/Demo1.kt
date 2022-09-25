@@ -286,6 +286,14 @@ class Demo1 : AppCompatActivity() {
         }
 
         appendMessage("a")          // a（main）
+        /**
+         * 2022-09-25 20:32:20.985 5356-5356/com.webabcd.androiddemo D/cccc: a
+        2022-09-25 20:32:21.989 5356-7016/com.webabcd.androiddemo D/cccc: b
+        2022-09-25 20:32:21.992 5356-5356/com.webabcd.androiddemo D/cccc: c
+        2022-09-25 20:32:22.994 5356-7016/com.webabcd.androiddemo D/cccc: d
+        2022-09-25 20:32:22.999 5356-5356/com.webabcd.androiddemo D/cccc: e
+        2022-09-25 20:32:23.002 5356-7016/com.webabcd.androiddemo D/cccc: f
+         */
     }
 
     fun sample7() {
@@ -298,6 +306,9 @@ class Demo1 : AppCompatActivity() {
             var coroutineName = currentCoroutineContext()[CoroutineName]?.name
             appendMessage("coroutineName:$coroutineName")
         }
+        /**
+         * 2022-09-25 20:34:29.353 5356-7016/com.webabcd.androiddemo D/cccc: coroutineName:myCoroutine
+         */
     }
 
 
